@@ -33,15 +33,26 @@ module Shinybooru
         data = Nokogiri::Slop((booru_get '&limit=' + limit.to_s).body)
         posts = []
         data.posts.children.each do |post|
-          posts.push Shinybooru::Post.new(post)
+          if post.is_a? Nokogiri::XML::Element
+            posts.push Shinybooru::Post.new(post)
+          end
         end
-        posts
+        if posts.length > 1
+          posts
+        else
+          posts[0]
+        end
+      else
+        raise Shinybooru::OfflineError
       end
     end
+  end
 
+  class OfflineError < StandardError
   end
 
   class Post
+    attr_reader :data
     def initialize (nokogiri_data)
       @data = Hash.new
       nokogiri_data.attribute_nodes.each do |node|
@@ -51,6 +62,7 @@ module Shinybooru
         if node.name == "tags" # so the tags are a list
           @data[node.name.to_sym] = node.value.split " "
         end
+        data
       end
     end
   end

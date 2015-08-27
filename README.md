@@ -1,8 +1,6 @@
 # Shinybooru
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/shinybooru`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+A gem which returns an easy to use object for Gelbooru requests
 
 ## Installation
 
@@ -22,7 +20,22 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+###Creating Booru object
+```ruby
+booru = Shinybooru::Booru.new
+```
+
+###Retrieving posts from Gelbooru server
+```ruby
+booru = Shinybooru::Booru.new
+post = booru.posts 1 #returns Shinybooru::Post
+```
+
+###Retrieving posts from Gelbooru server
+```ruby
+booru = Shinybooru::Booru.new
+posts = booru.posts 10 #returns Array of Shinybooru::Post
+```
 
 ## Development
 
@@ -32,7 +45,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/shinybooru.
+Bug reports and pull requests are welcome on GitHub at https://github.com/calvcoll/shinybooru.
 
 
 ## License
