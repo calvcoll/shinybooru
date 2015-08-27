@@ -22,8 +22,8 @@ describe Shinybooru do
   end
 
   if online
-    it 'should get homepage' do
-      expect(@booru.index).not_to be nil
+    it 'should get a post' do
+      expect(@booru.posts).not_to be nil
     end
   end
 end

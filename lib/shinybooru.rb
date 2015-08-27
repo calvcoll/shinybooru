@@ -1,5 +1,6 @@
 require "shinybooru/version"
 require "http_requestor"
+require "nokogiri"
 
 module Shinybooru
   class Booru
@@ -24,14 +25,33 @@ module Shinybooru
     end
 
     def booru_get (page)
-      @booru.get 'index.php' + page
+      @booru.get '/index.php?page=dapi&s=post&q=index' + page
     end
 
-    def index
+    def posts (limit=1)
       if @online
-        (booru_get 'posts').message
+        data = Nokogiri::Slop((booru_get '&limit=' + limit.to_s).body)
+        posts = []
+        data.posts.children.each do |post|
+          posts.push Shinybooru::Post.new(post)
+        end
+        posts
       end
     end
 
+  end
+
+  class Post
+    def initialize (nokogiri_data)
+      @data = Hash.new
+      nokogiri_data.attribute_nodes.each do |node|
+        unless node.name == "tags"
+          @data[node.name.to_sym] = node.value
+        end
+        if node.name == "tags" # so the tags are a list
+          @data[node.name.to_sym] = node.value.split " "
+        end
+      end
+    end
   end
 end
