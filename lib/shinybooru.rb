@@ -28,9 +28,21 @@ module Shinybooru
       @booru.get '/index.php?page=dapi&s=post&q=index' + page
     end
 
-    def posts (limit=1)
+    def posts (limit=1, nsfw=true, tags=[])
       if @online
-        data = Nokogiri::Slop((booru_get '&limit=' + limit.to_s).body)
+        req = '&limit=' + limit.to_s
+        if tags
+          req += '&tags=' + tags.join('%20')
+        end
+        if nsfw
+          explicit_tags = '-rating%3aquestionable%20-rating%3explicit'
+          unless tags
+            req += '&tags=' + explicit_tags
+          else
+            req += '%20' + explicit_tags
+          end
+        end
+        data = Nokogiri::Slop((booru_get req).body)
         posts = []
         data.posts.children.each do |post|
           if post.is_a? Nokogiri::XML::Element

@@ -46,5 +46,13 @@ describe Shinybooru do
     it 'should return multiple posts if asked' do
       expect(@booru.posts(2).length).to be > 1
     end
+
+    it 'should return post with tags asked for' do
+      expect(@booru.posts(1, false, ["highres"]).data[:tags].include? "highres").to be true
+    end
+
+    it 'should return safe post with nsfw turned off' do
+      expect(@booru.posts(1, false).data[:rating] == "s").to be true
+    end
   end
 end
