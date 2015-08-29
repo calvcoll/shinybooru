@@ -12,12 +12,14 @@ module Shinybooru
     end
 
     def checkConnection
-      conn = @booru.get 'index.php'
-      if conn
-        @online = true
+      begin
+        conn = @booru.get 'index.php'
+        if conn
+          @online = true
+        end
+      rescue TimeoutError
+        @online = false
       end
-    rescue TimeoutError
-      @online = false
     end
 
     def errors
