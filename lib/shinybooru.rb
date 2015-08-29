@@ -28,13 +28,22 @@ module Shinybooru
       @booru.get '/index.php?page=dapi&s=post&q=index' + page
     end
 
-    def posts (limit=1, nsfw=true, tags=[])
+    def posts (args=Hash.new)
+      limit = args[:limit]
+      limit = 1 if limit.nil?
+      nsfw = args[:nsfw]
+      nsfw = true if nsfw.nil?
+      tags = args[:tags]
+      tags = [] if tags.nil?
       if @online
         req = '&limit=' + limit.to_s
         if tags
-          req += '&tags=' + tags.join('%20')
+          unless tags.is_a? String
+            tags = tags.join('%20')
+          end
+          req += '&tags=' + tags
         end
-        if nsfw
+        unless nsfw
           explicit_tags = '-rating%3aquestionable%20-rating%3explicit'
           unless tags
             req += '&tags=' + explicit_tags

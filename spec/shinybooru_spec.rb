@@ -32,27 +32,31 @@ describe Shinybooru do
     end
 
     it 'should separate post tags' do
-      expect(@booru.posts(1).data[:tags]).to be_kind_of Array
+      expect(@booru.posts(limit: 1).data[:tags]).to be_kind_of Array
     end
 
     it 'should return a Shinybooru::Post object if only one post requested' do
-      expect(@booru.posts(1)).to be_kind_of Shinybooru::Post
+      expect(@booru.posts(limit: 1)).to be_kind_of Shinybooru::Post
     end
 
     it 'should return an array for multiple posts' do
-      expect(@booru.posts(2)).to be_kind_of Array
+      expect(@booru.posts(limit: 2)).to be_kind_of Array
     end
 
     it 'should return multiple posts if asked' do
-      expect(@booru.posts(2).length).to be > 1
+      expect(@booru.posts(limit: 2).length).to be > 1
     end
 
     it 'should return post with tags asked for' do
-      expect(@booru.posts(1, false, ["highres"]).data[:tags].include? "highres").to be true
+      expect(@booru.posts(limit: 1, nsfw: false, tags: "highres").data[:tags].include? "highres").to be true
+    end
+
+    it 'should return post with multiple tags' do
+      expect(@booru.posts(limit: 1, nsfw: false, tags: ["highres", "japanese_clothes"]))
     end
 
     it 'should return safe post with nsfw turned off' do
-      expect(@booru.posts(1, false).data[:rating] == "s").to be true
+      expect(@booru.posts(limit: 1, nsfw: false).data[:rating] == "s").to be true
     end
   end
 end
