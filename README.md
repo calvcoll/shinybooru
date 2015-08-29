@@ -1,4 +1,5 @@
 # Shinybooru
+[![Build Status](https://travis-ci.org/calvcoll/shinybooru.svg?branch=master)](https://travis-ci.org/calvcoll/shinybooru)
 
 A gem which returns an easy to use object for Gelbooru requests
 
