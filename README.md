@@ -35,7 +35,14 @@ post = booru.posts 1 #returns Shinybooru::Post
 ###Retrieving posts from Gelbooru server
 ```ruby
 booru = Shinybooru::Booru.new
-posts = booru.posts 10 #returns Array of Shinybooru::Post
+posts = booru.posts :limit => 10 #returns Array of Shinybooru::Post
+```
+
+###Searching for tags
+```ruby
+booru = Shinybooru::Booru.new
+posts = booru.posts :tags => "highres" #returns Shinybooru::Post, with tag highres
+posts = booru.posts :tags => ["highres", "couple"] #returns Shinybooru::Post, with tags highres, couple
 ```
 
 ## Development
