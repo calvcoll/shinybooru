@@ -7,7 +7,7 @@ module Shinybooru
   class Booru
     attr_accessor :online, :url
 
-    def initialize(site = 'safebooru.org')
+    def initialize(site = nil)
       good_sites = %w(gelbooru.com safebooru.org)
       # Default to safebooru
       @url = if good_sites.include? site
@@ -37,20 +37,21 @@ module Shinybooru
     end
 
     def posts(args = {})
-      limit = args[:limit]
-      limit = 1 if limit.nil?
-      sfw = args[:sfw]
-      sfw = true if sfw.nil?
+      limit = limit.nil? ? 1 : args[:limit]
+      tags = tags.nil? ? [] : args[:tags]
+      sfw = args[:sfw] == true
       # Always sfw if safebooru, so no need for rating tags
       sfw = false if @url == 'safebooru.org'
-      tags = args[:tags]
-      tags = [] if tags.nil?
+
       raise Shinybooru::OfflineError unless @online
+
       req = '&limit=' + limit.to_s
+
       if tags
         tags = tags.join('%20') unless tags.is_a? String
         req += '&tags=' + tags
       end
+
       if sfw
         explicit_tags = '-rating%3aquestionable%20-rating%3explicit'
         req += if tags
@@ -59,13 +60,16 @@ module Shinybooru
                  '&tags=' + explicit_tags
                end
       end
+
       data = Nokogiri::Slop((booru_get req).body)
       posts = []
+
       data.posts.children.each do |post|
         if post.is_a? Nokogiri::XML::Element
           posts.push Shinybooru::Post.new(post)
         end
       end
+
       if posts.length > 1
         posts
       else
