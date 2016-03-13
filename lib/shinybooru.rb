@@ -1,22 +1,28 @@
-require "shinybooru/version"
-require "http_requestor"
-require "nokogiri"
+require 'shinybooru/version'
+require 'http_requestor'
+require 'nokogiri'
 
 module Shinybooru
+  # A gem which returns an easy to use object for Gelbooru requests
   class Booru
-    attr_accessor :online
+    attr_accessor :online, :url
 
-    def initialize
-      @booru = HTTP::Requestor.new "gelbooru.com"
-      checkConnection
+    def initialize(site = 'safebooru.org')
+      good_sites = %w(gelbooru.com safebooru.org)
+      # Default to safebooru
+      @url = if good_sites.include? site
+               site
+             else
+               'safebooru.org'
+             end
+      @booru = HTTP::Requestor.new @url
+      check_connection
     end
 
-    def checkConnection
+    def check_connection
       begin
         conn = @booru.get 'index.php'
-        if conn
-          @online = true
-        end
+        @online = true if conn
       rescue TimeoutError
         @online = false
       end
@@ -26,47 +32,44 @@ module Shinybooru
       !@online
     end
 
-    def booru_get (page)
+    def booru_get(page)
       @booru.get '/index.php?page=dapi&s=post&q=index' + page
     end
 
-    def posts (args=Hash.new)
+    def posts(args = {})
       limit = args[:limit]
       limit = 1 if limit.nil?
-      nsfw = args[:nsfw]
-      nsfw = true if nsfw.nil?
+      sfw = args[:sfw]
+      sfw = true if sfw.nil?
+      # Always sfw if safebooru, so no need for rating tags
+      sfw = false if @url == 'safebooru.org'
       tags = args[:tags]
       tags = [] if tags.nil?
-      if @online
-        req = '&limit=' + limit.to_s
-        if tags
-          unless tags.is_a? String
-            tags = tags.join('%20')
-          end
-          req += '&tags=' + tags
+      raise Shinybooru::OfflineError unless @online
+      req = '&limit=' + limit.to_s
+      if tags
+        tags = tags.join('%20') unless tags.is_a? String
+        req += '&tags=' + tags
+      end
+      if sfw
+        explicit_tags = '-rating%3aquestionable%20-rating%3explicit'
+        req += if tags
+                 '%20' + explicit_tags
+               else
+                 '&tags=' + explicit_tags
+               end
+      end
+      data = Nokogiri::Slop((booru_get req).body)
+      posts = []
+      data.posts.children.each do |post|
+        if post.is_a? Nokogiri::XML::Element
+          posts.push Shinybooru::Post.new(post)
         end
-        unless nsfw
-          explicit_tags = '-rating%3aquestionable%20-rating%3explicit'
-          unless tags
-            req += '&tags=' + explicit_tags
-          else
-            req += '%20' + explicit_tags
-          end
-        end
-        data = Nokogiri::Slop((booru_get req).body)
-        posts = []
-        data.posts.children.each do |post|
-          if post.is_a? Nokogiri::XML::Element
-            posts.push Shinybooru::Post.new(post)
-          end
-        end
-        if posts.length > 1
-          posts
-        else
-          posts[0]
-        end
+      end
+      if posts.length > 1
+        posts
       else
-        raise Shinybooru::OfflineError
+        posts[0]
       end
     end
   end
@@ -74,19 +77,22 @@ module Shinybooru
   class OfflineError < StandardError
   end
 
+  # Used internally
   class Post
     attr_reader :data
-    def initialize (nokogiri_data)
-      @data = Hash.new
+    def initialize(nokogiri_data)
+      @data = {}
       nokogiri_data.attribute_nodes.each do |node|
-        unless node.name == "tags"
-          @data[node.name.to_sym] = node.value
-        end
-        if node.name == "tags" # so the tags are a list
-          @data[node.name.to_sym] = node.value.split " "
-        end
+        @data[node.name.to_sym] = if node.name == 'tags'
+                                    # so that the tags are a list
+                                    node.value.split ' '
+                                  else
+                                    node.value
+                                  end
         data
       end
     end
   end
 end
+
+# vim:tabstop=2 softtabstop=2 expandtab shiftwidth=2 smarttab foldmethod=syntax:
