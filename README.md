@@ -1,7 +1,7 @@
 # Shinybooru
 [![Build Status](https://travis-ci.org/calvcoll/shinybooru.svg?branch=master)](https://travis-ci.org/calvcoll/shinybooru)
 
-A gem which returns an easy to use object for Gelbooru requests
+A gem which returns an easy to use object for Gelbooru/Safebooru requests
 
 ## Installation
 
@@ -26,6 +26,13 @@ Or install it yourself as:
 booru = Shinybooru::Booru.new
 ```
 
+Optionally, provide the site URL. Only safebooru.org and gelbooru.com
+are supported at this time.
+
+```ruby
+booru = Shinybooru::Booru.new 'safebooru.org'
+```
+
 ###Retrieving posts from Gelbooru server
 ```ruby
 booru = Shinybooru::Booru.new
@@ -35,14 +42,14 @@ post = booru.posts 1 #returns Shinybooru::Post
 ###Retrieving posts from Gelbooru server
 ```ruby
 booru = Shinybooru::Booru.new
-posts = booru.posts :limit => 10 #returns Array of Shinybooru::Post
+posts = booru.posts limit: 10 #returns Array of Shinybooru::Post
 ```
 
 ###Searching for tags
 ```ruby
 booru = Shinybooru::Booru.new
-posts = booru.posts :tags => "highres" #returns Shinybooru::Post, with tag highres
-posts = booru.posts :tags => ["highres", "couple"] #returns Shinybooru::Post, with tags highres, couple
+posts = booru.posts tags: "highres" #returns Shinybooru::Post, with tag highres
+posts = booru.posts tags: ["highres", "couple"] #returns Shinybooru::Post, with tags highres, couple
 ```
 
 ## Development
