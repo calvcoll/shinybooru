@@ -1,11 +1,11 @@
 require 'spec_helper'
 
-online = Shinybooru::Booru.new.checkConnection
+online = Shinybooru::Booru.new.check_connection
 
 describe Shinybooru do
   before :each do
     @booru = Shinybooru::Booru.new
-    @booru.checkConnection
+    @booru.check_connection
   end
 
   it 'has a version number' do
@@ -13,7 +13,7 @@ describe Shinybooru do
   end
 
   it 'should get a response or timeout' do
-    expect(@booru.checkConnection).not_to be nil
+    expect(@booru.check_connection).not_to be nil
   end
 
   it 'should alert the user if no connection' do
