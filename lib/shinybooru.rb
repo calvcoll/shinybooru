@@ -37,8 +37,8 @@ module Shinybooru
     end
 
     def posts(args = {})
-      limit = limit.nil? ? 1 : args[:limit]
-      tags = tags.nil? ? [] : args[:tags]
+      limit = args[:limit].nil? ? 10 : args[:limit]
+      tags = args[:tags].nil? ? [] : args[:tags]
       sfw = args[:sfw] == true
       # Always sfw if safebooru, so no need for rating tags
       sfw = false if @url == 'safebooru.org'
