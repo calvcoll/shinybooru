@@ -1,11 +1,11 @@
 require 'spec_helper'
 
-online = Shinybooru::Booru.new.checkConnection
+online = Shinybooru::Booru.new.check_connection
 
 describe Shinybooru do
   before :each do
     @booru = Shinybooru::Booru.new
-    @booru.checkConnection
+    @booru.check_connection
   end
 
   it 'has a version number' do
@@ -13,7 +13,7 @@ describe Shinybooru do
   end
 
   it 'should get a response or timeout' do
-    expect(@booru.checkConnection).not_to be nil
+    expect(@booru.check_connection).not_to be nil
   end
 
   it 'should alert the user if no connection' do
@@ -23,7 +23,7 @@ describe Shinybooru do
 
   it 'should raise error if offline' do
     @booru.online = false
-    expect{@booru.posts}.to raise_error Shinybooru::OfflineError
+    expect { @booru.posts }.to raise_error Shinybooru::OfflineError
   end
 
   if online
@@ -48,11 +48,11 @@ describe Shinybooru do
     end
 
     it 'should return post with tags asked for' do
-      expect(@booru.posts(limit: 1, nsfw: false, tags: "highres").data[:tags].include? "highres").to be true
+      expect(@booru.posts(limit: 1, nsfw: false, tags: 'highres').data[:tags].include?('highres')).to be true
     end
 
     it 'should return post with multiple tags' do
-      expect(@booru.posts(limit: 1, nsfw: false, tags: ["highres", "japanese_clothes"]))
+      expect(@booru.posts(limit: 1, nsfw: false, tags: %w(highres japanese_clothes)))
     end
 
     # Currently not working, blame Gelbooru!
