@@ -1,5 +1,6 @@
 # Shinybooru
 [![Build Status](https://travis-ci.org/calvcoll/shinybooru.svg?branch=master)](https://travis-ci.org/calvcoll/shinybooru)
+[![Gem Version](https://badge.fury.io/rb/shinybooru.svg)](https://rubygems.org/gems/shinybooru)
 
 A gem which returns an easy to use object for Gelbooru/Safebooru requests
 
